@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Echo Test</title>
+</head>
+<body>
+    <script>
+        // Insert the JavaScript code here
+        const wsUrl = "ws://localhost:4000/ws/";
+
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = function(event) {
+            console.log("WebSocket is open now.");
+            socket.send(JSON.stringify({method: "get", key: "val"}));
+            socket.send(JSON.stringify({method: "update", key: "val", val: 1}));
+            socket.send(JSON.stringify({method: "get", key: "val"}));
+            socket.send(JSON.stringify({method: "sub", key: "c1"}));
+            socket.send(JSON.stringify({method: "subbed_channels"}));
+            socket.send(JSON.stringify({method: "sub", key: "c2"}));
+            socket.send(JSON.stringify({method: "pub", channel: "c1", 
+            action: {
+                method: "update", key: "val", val: Math.random() * 10
+            }}));
+            socket.send(JSON.stringify({method: "custom"}));
+            //socket.send(JSON.stringify({method: "unsub", key: "c1"}));
+            socket.send(JSON.stringify({method: "subbed_channels"}));
+            setTimeout(() => socket.close(), 10000)
+        };
+
+        socket.onmessage = function(event) {
+            console.log("Message received from the server:", event.data);
+        };
+
+        socket.onclose = function(event) {
+            console.log("WebSocket is closed now.");
+        };
+
+        socket.onerror = function(error) {
+            console.log("WebSocket error:", error);
+        };
+    </script>
+</body>
+</html>
